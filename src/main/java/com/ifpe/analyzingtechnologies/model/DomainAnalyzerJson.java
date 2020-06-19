@@ -7,16 +7,16 @@ import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DomainAnalyzer {
+public class DomainAnalyzerJson {
     private String status;
-    private List<Application> applications;
+    private List<ApplicationJson> applicationJsons;
     private String language;
 
     @Override
     public String toString() {
         return "DomainAnalyzer{" +
                 "status='" + status + '\'' +
-                ", applications=" + applications +
+                ", applications=" + applicationJsons +
                 ", language='" + language + '\'' +
                 '}';
     }
