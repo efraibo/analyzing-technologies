@@ -9,8 +9,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DomainAnalyzerJson {
 
-    private String nomeOrgao;
-    private String urlOrgao;
+    private OrgaoJson orgaoJson;
     private List<ApplicationJson> applicationJsons;
 
 }
