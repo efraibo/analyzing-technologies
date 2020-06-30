@@ -9,5 +9,5 @@ import javax.persistence.Entity;
 public class Orgao extends ObjetoPersistente {
     private String nome;
     private String linkWebSite;
-    private String status;
+    private Boolean status;
 }
