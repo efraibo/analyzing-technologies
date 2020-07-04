@@ -4,6 +4,11 @@ import com.google.gson.Gson;
 import com.ifpe.analyzingtechnologies.crawler.entities.ApplicationJson;
 import com.ifpe.analyzingtechnologies.crawler.entities.DomainAnalyzerJson;
 import com.ifpe.analyzingtechnologies.crawler.entities.TecnologyJson;
+import com.ifpe.analyzingtechnologies.dao.entities.Application;
+import com.ifpe.analyzingtechnologies.dao.entities.DomainAnalyzer;
+import com.ifpe.analyzingtechnologies.dao.entities.Orgao;
+import com.ifpe.analyzingtechnologies.dao.repository.DomainAnalyzerRepository;
+import com.ifpe.analyzingtechnologies.mapper.TecnologyMapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,6 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,71 +28,113 @@ public class ScheduledAnalyzer {
 
     private final OrgaoProcessService processService;
 
-    public ScheduledAnalyzer(OrgaoProcessService processService) {
+    private final TecnologyMapper mapper;
+
+    private final DomainAnalyzerRepository domainAnalyzerRepository;
+
+    //TecnologyMapper.INSTANCE.tecnologyJsonToTecnology()
+
+    public ScheduledAnalyzer(OrgaoProcessService processService, TecnologyMapper mapper,
+                             DomainAnalyzerRepository domainAnalyzerRepository) {
         this.processService = processService;
+        this.mapper = mapper;
+        this.domainAnalyzerRepository = domainAnalyzerRepository;
     }
 
     @Scheduled(fixedRate = 10000)
+    @Transactional
     public void processFileURLs() {
 
-        List<String> links = processService.findLinksDontProcess();
+        List<Orgao> orgaos = processService.findLinksDontProcess();
 
-        for (String link : links) {
+        for (Orgao orgao : orgaos) {
 
-            Document document = null;
             try {
-                document = Jsoup.connect("https://builtwith.com/?" + link)
-                        .ignoreContentType(true)
-                        .maxBodySize(0)
-                        .proxy("1.255.48.197", 8080)
-                        .timeout(5000000).get();
+                Document document = connectConfigurationJsoup(orgao);
 
-
-                Elements boxesApplications = document.select("#mainForm > div:nth-child(3) > div > div.col-md-8.pr-1.pl-4 > div");
+                List<ApplicationJson> applicationsList = new ArrayList<>();
 
                 DomainAnalyzerJson domainAnalyzerJson = new DomainAnalyzerJson();
 
-                List<ApplicationJson> applicationsList = new ArrayList<>();
-                domainAnalyzerJson.setApplicationJsons(applicationsList);
+                extractData(document, applicationsList, domainAnalyzerJson);
 
-                for (Element linha : boxesApplications) {
+                List<Application> applications = mapper.toApplicationJsonApplications(applicationsList);
 
-                    ApplicationJson app = new ApplicationJson();
-
-                    String type = linha.getElementsByClass("card-title").first().text();
-                    Elements tecnologies = linha.getElementsByClass("row mb-2 mt-2");
-                    app.setType(type);
-
-                    List<TecnologyJson> tecList = new ArrayList<>();
-                    for (Element linhaTec : tecnologies) {
-
-                        TecnologyJson tec = new TecnologyJson();
-
-                        String img = linhaTec.getElementsByTag("img").first().attr("data-src");
-                        String name = linhaTec.getElementsByTag("h2").first().text();
-
-                        tec.setIcon(img);
-                        tec.setName(name);
-
-                        tecList.add(tec);
-                    }
-
-                    app.setTecnologies(tecList);
-
-                    applicationsList.add(app);
-
-                }
+                System.out.println(applications);
 
                 domainAnalyzerJson.setApplicationJsons(applicationsList);
+                orgao.setStatus(Boolean.TRUE);
+//                domainAnalyzerJson.setOrgaoJson(mapper.orgaoToOrgaoJson(orgao));
+
+                DomainAnalyzer domainAnalyzer = mapper.domainAnalyzerJsonToDomainAnalyzer(domainAnalyzerJson);
+                domainAnalyzer.setOrgao(orgao);
+
+                domainAnalyzerRepository.save(domainAnalyzer);
 
                 Gson gson = new Gson();
                 String s = gson.toJson(domainAnalyzerJson);
-
                 System.out.println(s);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Extraindo dados via JSOUP
+     * @param document
+     * @param applicationsList
+     * @param domainAnalyzerJson
+     */
+    private void extractData(Document document, List<ApplicationJson> applicationsList, DomainAnalyzerJson domainAnalyzerJson) {
+        Elements boxesApplications = document.select("#mainForm > div:nth-child(3) > div > div.col-md-8.pr-1.pl-4 > div");
+
+        domainAnalyzerJson.setApplicationJsons(applicationsList);
+
+        for (Element linha : boxesApplications) {
+
+            ApplicationJson app = new ApplicationJson();
+
+            String type = linha.getElementsByClass("card-title").first().text();
+            Elements tecnologies = linha.getElementsByClass("row mb-2 mt-2");
+            app.setType(type);
+
+            List<TecnologyJson> tecList = new ArrayList<>();
+            for (Element linhaTec : tecnologies) {
+
+                TecnologyJson tec = new TecnologyJson();
+
+                String img = linhaTec.getElementsByTag("img").first().attr("data-src");
+                String name = linhaTec.getElementsByTag("h2").first().text();
+
+                tec.setIcon(img);
+                tec.setName(name);
+
+                tecList.add(tec);
+
+            }
+
+            app.setTecnologies(tecList);
+
+            applicationsList.add(app);
+
+        }
+    }
+
+    /**
+     * Configuração de conexao JSoup
+     * @param orgao
+     * @return
+     * @throws IOException
+     */
+    private Document connectConfigurationJsoup(Orgao orgao) throws IOException {
+
+        return Jsoup.connect("https://builtwith.com/?" + orgao.getLinkWebSite())
+                .ignoreContentType(true)
+                .maxBodySize(0)
+                .proxy("1.255.48.197", 8080)
+                .timeout(5000000).get();
     }
 
 }

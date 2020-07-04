@@ -14,9 +14,8 @@ public class OrgaoProcessService {
     @Autowired
     private OrgaoRepository repository;
 
-    public List<String> findLinksDontProcess() {
-        List<Orgao> orgaos = repository.findByStatusFalse();
-        return orgaos.stream().map(c -> c.getLinkWebSite()).collect(Collectors.toList());
+    public List<Orgao> findLinksDontProcess() {
+        return repository.findByStatusFalse();
     }
 
 

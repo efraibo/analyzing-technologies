@@ -2,19 +2,18 @@ package com.ifpe.analyzingtechnologies.dao.entities;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.List;
 
 @Data
 @Entity
 public class DomainAnalyzer extends ObjetoPersistente {
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "orgao_id", referencedColumnName = "id")
     private Orgao orgao;
 
-    @OneToMany
-    private List<Application> applicationJsons;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Application> applications;
 
 }
