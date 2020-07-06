@@ -3,12 +3,7 @@ package com.ifpe.analyzingtechnologies.controller;
 import com.ifpe.analyzingtechnologies.dao.entities.Orgao;
 import com.ifpe.analyzingtechnologies.dao.repository.OrgaoRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,6 +22,11 @@ public class OrgaoController {
     @ResponseStatus(HttpStatus.CREATED)
     public List<Orgao> adicionarOrgaos(@RequestBody List<Orgao> orgaos) {
         return orgaoRepository.saveAll(orgaos);
+    }
+
+    @GetMapping
+    public String teste() {
+        return "Api funcionando com sucesso";
     }
 
 }
