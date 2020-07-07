@@ -11,26 +11,26 @@ import com.ifpe.analyzingtechnologies.dao.entities.Tecnology;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.springframework.stereotype.Component;
+import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-//@Mapper
-public class TecnologyMapper {
+@Mapper
+public interface TecnologyMapper {
+
+    TecnologyMapper INSTANCE = Mappers.getMapper(TecnologyMapper.class);
+
+    Tecnology tecnologyJsonToTecnology(TecnologyJson tecnologyJson);
+    Application applicationJsonToApplication(ApplicationJson applicationJson);
+    OrgaoJson orgaoToOrgaoJson(Orgao orgao);
+    List<Application> toApplicationJsonApplications(List<ApplicationJson> applicationsJson);
 
 
-
-//    Tecnology tecnologyJsonToTecnology(TecnologyJson tecnologyJson);
-//    Application applicationJsonToApplication(ApplicationJson applicationJson);
-//    OrgaoJson orgaoToOrgaoJson(Orgao orgao);
-//    List<Application> toApplicationJsonApplications(List<ApplicationJson> applicationsJson);
-//
-//
-//    @Mappings({
-//        @Mapping(source = "orgaoJson", target = "orgao"),
-//        @Mapping(source = "applicationJsons", target = "applications")
-//    })
-//    DomainAnalyzer domainAnalyzerJsonToDomainAnalyzer(DomainAnalyzerJson domainAnalyzerJson);
+    @Mappings({
+        @Mapping(source = "orgaoJson", target = "orgao"),
+        @Mapping(source = "applicationJsons", target = "applications")
+    })
+    DomainAnalyzer domainAnalyzerJsonToDomainAnalyzer(DomainAnalyzerJson domainAnalyzerJson);
 
 
 
