@@ -10,12 +10,12 @@ import com.ifpe.analyzingtechnologies.dao.entities.Orgao;
 import com.ifpe.analyzingtechnologies.dao.entities.Tecnology;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Mapper
-@Component
 public interface TecnologyMapper {
 
     Tecnology tecnologyJsonToTecnology(TecnologyJson tecnologyJson);
@@ -24,8 +24,10 @@ public interface TecnologyMapper {
     List<Application> toApplicationJsonApplications(List<ApplicationJson> applicationsJson);
 
 
-    @Mapping(source = "orgaoJson", target = "orgao")
-    @Mapping(source = "applicationJsons", target = "applications")
+    @Mappings({
+        @Mapping(source = "orgaoJson", target = "orgao"),
+        @Mapping(source = "applicationJsons", target = "applications")
+    })
     DomainAnalyzer domainAnalyzerJsonToDomainAnalyzer(DomainAnalyzerJson domainAnalyzerJson);
 
 
