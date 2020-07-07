@@ -28,16 +28,16 @@ public class ScheduledAnalyzer {
 
     private final OrgaoProcessService processService;
 
-    private final TecnologyMapper mapper;
+//    private final TecnologyMapper mapper;
 
     private final DomainAnalyzerRepository domainAnalyzerRepository;
 
     //TecnologyMapper.INSTANCE.tecnologyJsonToTecnology()
 
-    public ScheduledAnalyzer(OrgaoProcessService processService, TecnologyMapper mapper,
+    public ScheduledAnalyzer(OrgaoProcessService processService,
                              DomainAnalyzerRepository domainAnalyzerRepository) {
         this.processService = processService;
-        this.mapper = mapper;
+//        this.mapper = mapper;
         this.domainAnalyzerRepository = domainAnalyzerRepository;
     }
 
