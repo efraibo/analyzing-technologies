@@ -16,21 +16,21 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 //@Mapper
-public interface TecnologyMapper {
+public class TecnologyMapper {
 
 
 
-    Tecnology tecnologyJsonToTecnology(TecnologyJson tecnologyJson);
-    Application applicationJsonToApplication(ApplicationJson applicationJson);
-    OrgaoJson orgaoToOrgaoJson(Orgao orgao);
-    List<Application> toApplicationJsonApplications(List<ApplicationJson> applicationsJson);
-
-
-    @Mappings({
-        @Mapping(source = "orgaoJson", target = "orgao"),
-        @Mapping(source = "applicationJsons", target = "applications")
-    })
-    DomainAnalyzer domainAnalyzerJsonToDomainAnalyzer(DomainAnalyzerJson domainAnalyzerJson);
+//    Tecnology tecnologyJsonToTecnology(TecnologyJson tecnologyJson);
+//    Application applicationJsonToApplication(ApplicationJson applicationJson);
+//    OrgaoJson orgaoToOrgaoJson(Orgao orgao);
+//    List<Application> toApplicationJsonApplications(List<ApplicationJson> applicationsJson);
+//
+//
+//    @Mappings({
+//        @Mapping(source = "orgaoJson", target = "orgao"),
+//        @Mapping(source = "applicationJsons", target = "applications")
+//    })
+//    DomainAnalyzer domainAnalyzerJsonToDomainAnalyzer(DomainAnalyzerJson domainAnalyzerJson);
 
 
 
