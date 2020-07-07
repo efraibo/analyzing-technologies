@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-//@EnableScheduling
+@EnableScheduling
 public class ScheduledAnalyzer {
 
     private final OrgaoProcessService processService;
@@ -41,7 +41,7 @@ public class ScheduledAnalyzer {
         this.domainAnalyzerRepository = domainAnalyzerRepository;
     }
 
-//    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 10000)
     @Transactional
     public void processFileURLs() {
 
@@ -58,18 +58,18 @@ public class ScheduledAnalyzer {
 
                 extractData(document, applicationsList, domainAnalyzerJson);
 
-//                List<Application> applications = mapper.toApplicationJsonApplications(applicationsList);
+                List<Application> applications = TecnologyMapper.INSTANCE.toApplicationJsonApplications(applicationsList);
 
-//                System.out.println(applications);
+                System.out.println(applications);
 
                 domainAnalyzerJson.setApplicationJsons(applicationsList);
                 orgao.setStatus(Boolean.TRUE);
-//                domainAnalyzerJson.setOrgaoJson(mapper.orgaoToOrgaoJson(orgao));
+                domainAnalyzerJson.setOrgaoJson(TecnologyMapper.INSTANCE.orgaoToOrgaoJson(orgao));
 
-//                DomainAnalyzer domainAnalyzer = mapper.domainAnalyzerJsonToDomainAnalyzer(domainAnalyzerJson);
-//                domainAnalyzer.setOrgao(orgao);
+                DomainAnalyzer domainAnalyzer = TecnologyMapper.INSTANCE.domainAnalyzerJsonToDomainAnalyzer(domainAnalyzerJson);
+                domainAnalyzer.setOrgao(orgao);
 
-//                domainAnalyzerRepository.save(domainAnalyzer);
+                domainAnalyzerRepository.save(domainAnalyzer);
 
                 Gson gson = new Gson();
                 String s = gson.toJson(domainAnalyzerJson);
