@@ -58,18 +58,18 @@ public class ScheduledAnalyzer {
 
                 extractData(document, applicationsList, domainAnalyzerJson);
 
-                List<Application> applications = mapper.toApplicationJsonApplications(applicationsList);
+//                List<Application> applications = mapper.toApplicationJsonApplications(applicationsList);
 
-                System.out.println(applications);
+//                System.out.println(applications);
 
                 domainAnalyzerJson.setApplicationJsons(applicationsList);
                 orgao.setStatus(Boolean.TRUE);
 //                domainAnalyzerJson.setOrgaoJson(mapper.orgaoToOrgaoJson(orgao));
 
-                DomainAnalyzer domainAnalyzer = mapper.domainAnalyzerJsonToDomainAnalyzer(domainAnalyzerJson);
-                domainAnalyzer.setOrgao(orgao);
+//                DomainAnalyzer domainAnalyzer = mapper.domainAnalyzerJsonToDomainAnalyzer(domainAnalyzerJson);
+//                domainAnalyzer.setOrgao(orgao);
 
-                domainAnalyzerRepository.save(domainAnalyzer);
+//                domainAnalyzerRepository.save(domainAnalyzer);
 
                 Gson gson = new Gson();
                 String s = gson.toJson(domainAnalyzerJson);
