@@ -62,6 +62,7 @@ public class ScheduledAnalyzer {
 
                 System.out.println(applications);
 
+
                 domainAnalyzerJson.setApplicationJsons(applicationsList);
                 orgao.setStatus(Boolean.TRUE);
                 domainAnalyzerJson.setOrgaoJson(TecnologyMapper.INSTANCE.orgaoToOrgaoJson(orgao));
