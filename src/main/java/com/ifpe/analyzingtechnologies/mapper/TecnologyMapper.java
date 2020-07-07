@@ -10,10 +10,12 @@ import com.ifpe.analyzingtechnologies.dao.entities.Orgao;
 import com.ifpe.analyzingtechnologies.dao.entities.Tecnology;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Mapper
+@Component
 public interface TecnologyMapper {
 
     Tecnology tecnologyJsonToTecnology(TecnologyJson tecnologyJson);
