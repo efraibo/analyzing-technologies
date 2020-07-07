@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@EnableScheduling
+//@EnableScheduling
 public class ScheduledAnalyzer {
 
     private final OrgaoProcessService processService;
@@ -41,7 +41,7 @@ public class ScheduledAnalyzer {
         this.domainAnalyzerRepository = domainAnalyzerRepository;
     }
 
-    @Scheduled(fixedRate = 10000)
+//    @Scheduled(fixedRate = 10000)
     @Transactional
     public void processFileURLs() {
 

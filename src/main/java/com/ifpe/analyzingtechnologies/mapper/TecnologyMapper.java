@@ -15,9 +15,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Mapper
-@Component
+//@Mapper
 public interface TecnologyMapper {
+
+
 
     Tecnology tecnologyJsonToTecnology(TecnologyJson tecnologyJson);
     Application applicationJsonToApplication(ApplicationJson applicationJson);
