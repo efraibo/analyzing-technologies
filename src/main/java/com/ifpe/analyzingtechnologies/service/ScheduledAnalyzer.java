@@ -41,8 +41,8 @@ public class ScheduledAnalyzer {
         this.domainAnalyzerRepository = domainAnalyzerRepository;
     }
 
-    @Scheduled(fixedRate = 10000)
-    @Transactional
+    @Scheduled(fixedRate = 30000)
+//    @Transactional
     public void processFileURLs() {
 
         List<Orgao> orgaos = processService.findLinksDontProcess();
