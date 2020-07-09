@@ -3,21 +3,21 @@ package com.ifpe.analyzingtechnologies.service;
 import com.google.gson.Gson;
 import com.ifpe.analyzingtechnologies.crawler.entities.ApplicationJson;
 import com.ifpe.analyzingtechnologies.crawler.entities.DomainAnalyzerJson;
+import com.ifpe.analyzingtechnologies.crawler.entities.OrgaoJson;
 import com.ifpe.analyzingtechnologies.crawler.entities.TecnologyJson;
 import com.ifpe.analyzingtechnologies.dao.entities.Application;
 import com.ifpe.analyzingtechnologies.dao.entities.DomainAnalyzer;
 import com.ifpe.analyzingtechnologies.dao.entities.Orgao;
 import com.ifpe.analyzingtechnologies.dao.repository.DomainAnalyzerRepository;
-import com.ifpe.analyzingtechnologies.mapper.TecnologyMapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,16 +58,31 @@ public class ScheduledAnalyzer {
 
                 extractData(document, applicationsList, domainAnalyzerJson);
 
-                List<Application> applications = TecnologyMapper.INSTANCE.toApplicationJsonApplications(applicationsList);
+                List<Application> applications = new ArrayList<>(applicationsList.size());
+
+                BeanUtils.copyProperties(applicationsList, applications);
+
+//                for (int i = 0; i < applicationsList.size(); i++) {
+//                    BeanUtils.copyProperties(applications.get(i), applicationsList.get(i));
+//                }
+
+//                List<Application> applications = TecnologyMapper.INSTANCE.toApplicationJsonApplications(applicationsList);
 
                 System.out.println(applications);
 
 
                 domainAnalyzerJson.setApplicationJsons(applicationsList);
                 orgao.setStatus(Boolean.TRUE);
-                domainAnalyzerJson.setOrgaoJson(TecnologyMapper.INSTANCE.orgaoToOrgaoJson(orgao));
 
-                DomainAnalyzer domainAnalyzer = TecnologyMapper.INSTANCE.domainAnalyzerJsonToDomainAnalyzer(domainAnalyzerJson);
+                OrgaoJson orgaoJson = new OrgaoJson();
+                BeanUtils.copyProperties(orgao, orgaoJson);
+
+//                domainAnalyzerJson.setOrgaoJson(TecnologyMapper.INSTANCE.orgaoToOrgaoJson(orgao));
+                domainAnalyzerJson.setOrgaoJson(orgaoJson);
+
+//                DomainAnalyzer domainAnalyzer = TecnologyMapper.INSTANCE.domainAnalyzerJsonToDomainAnalyzer(domainAnalyzerJson);
+                DomainAnalyzer domainAnalyzer = new DomainAnalyzer();
+                BeanUtils.copyProperties(domainAnalyzerJson, domainAnalyzer);
                 domainAnalyzer.setOrgao(orgao);
 
                 domainAnalyzerRepository.save(domainAnalyzer);
