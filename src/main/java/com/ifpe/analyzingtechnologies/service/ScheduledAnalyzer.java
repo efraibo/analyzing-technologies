@@ -9,6 +9,7 @@ import com.ifpe.analyzingtechnologies.dao.entities.Application;
 import com.ifpe.analyzingtechnologies.dao.entities.DomainAnalyzer;
 import com.ifpe.analyzingtechnologies.dao.entities.Orgao;
 import com.ifpe.analyzingtechnologies.dao.repository.DomainAnalyzerRepository;
+import lombok.Synchronized;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +44,8 @@ public class ScheduledAnalyzer {
     }
 
     @Scheduled(fixedRate = 30000)
-//    @Transactional
+    @Transactional
+    @Synchronized
     public void processFileURLs() {
 
         List<Orgao> orgaos = processService.findLinksDontProcess();
