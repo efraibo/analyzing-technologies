@@ -42,11 +42,7 @@ public class ScheduledAnalyzer {
         this.orgaoRepository = orgaoRepository;
     }
 
-    //TecnologyMapper.INSTANCE.tecnologyJsonToTecnology()
-
-    @Scheduled(fixedRate = 10000)
-//    @Transactional
-//    @Synchronized
+    @Scheduled(fixedRate=60*60*1000)
     public void processFileURLs() {
 
         List<Orgao> orgaos = processService.findLinksDontProcess();
@@ -68,28 +64,11 @@ public class ScheduledAnalyzer {
 
                 extractData(document, applicationsList, orgaoJson);
 
-//                extractData(document, new ArrayList<Application>(), orgaoJson);
-
-
-//                List<Application> applications = mapperFacade.mapAsList(applicationsList, Application.class);
-
-//                BeanUtils.copyProperties(applicationsList, applications);
-
-//                for (int i = 0; i < applicationsList.size(); i++) {
-//                    BeanUtils.copyProperties(applications.get(i), applicationsList.get(i));
-//                }
-
-//                List<Application> applications = TecnologyMapper.INSTANCE.toApplicationJsonApplications(applicationsList);
-
                 System.out.println(applicationsList);
 
 
-//                domainAnalyzerJson.setApplications(applicationsList);
-//                orgaoJson.setApplications(applicationsList);
                 orgao.setStatus(Boolean.TRUE);
 
-
-//                BeanUtils.copyProperties(orgaoJson, orgaoAux);
                 applicationRepository.saveAll(applicationsList);
                 orgao.setApplications(applicationsList);
 
@@ -97,21 +76,9 @@ public class ScheduledAnalyzer {
                 orgaoRepository.save(orgaoJson);
                 domainAnalyzerJson.setOrgao(orgaoJson);
 
-//                DomainAnalyzer domainAnalyzer = TecnologyMapper.INSTANCE.domainAnalyzerJsonToDomainAnalyzer(domainAnalyzerJson);
-//                DomainAnalyzer domainAnalyzer = mapperFacade.map(domainAnalyzerJson, DomainAnalyzer.class);
-//                mapperFacade.map(domainAnalyzerJson, DomainAnalyzer.class);
-//                BeanUtils.copyProperties(domainAnalyzerJson, domainAnalyzer);
-//                domainAnalyzer.setOrgao(orgao);
-
-
                 Gson gson = new Gson();
                 String s = gson.toJson(domainAnalyzerJson);
                 System.out.println(s);
-
-//                List<Application> applications1 = orgao.getApplications();
-//                applicationRepository.saveAll(applications1);
-//                orgaoRepository.save(orgao);
-
 
                 domainAnalyzerRepository.save(domainAnalyzerJson);
 
