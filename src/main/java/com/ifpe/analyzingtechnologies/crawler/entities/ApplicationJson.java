@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ApplicationJson {
-
+    private Long id;
     private String type;
     private List<TecnologyJson> tecnologies;
 

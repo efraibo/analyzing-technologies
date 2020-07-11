@@ -1,69 +1,79 @@
 package com.ifpe.analyzingtechnologies.service;
 
 import com.google.gson.Gson;
-import com.ifpe.analyzingtechnologies.crawler.entities.ApplicationJson;
-import com.ifpe.analyzingtechnologies.crawler.entities.DomainAnalyzerJson;
-import com.ifpe.analyzingtechnologies.crawler.entities.OrgaoJson;
-import com.ifpe.analyzingtechnologies.crawler.entities.TecnologyJson;
 import com.ifpe.analyzingtechnologies.dao.entities.Application;
 import com.ifpe.analyzingtechnologies.dao.entities.DomainAnalyzer;
 import com.ifpe.analyzingtechnologies.dao.entities.Orgao;
+import com.ifpe.analyzingtechnologies.dao.entities.Tecnology;
+import com.ifpe.analyzingtechnologies.dao.repository.ApplicationRepository;
 import com.ifpe.analyzingtechnologies.dao.repository.DomainAnalyzerRepository;
-import lombok.Synchronized;
+import com.ifpe.analyzingtechnologies.dao.repository.OrgaoRepository;
+import com.ifpe.analyzingtechnologies.dao.repository.TecnologyRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 @EnableScheduling
+@Component
 public class ScheduledAnalyzer {
 
-    private final OrgaoProcessService processService;
-
-//    private final TecnologyMapper mapper;
+    private final TecnologyRepository tecnologyRepository;
 
     private final DomainAnalyzerRepository domainAnalyzerRepository;
+    private final ApplicationRepository applicationRepository;
+    private final OrgaoRepository orgaoRepository;
+    @Autowired
+    private OrgaoProcessService processService;
+
+    public ScheduledAnalyzer(DomainAnalyzerRepository domainAnalyzerRepository, TecnologyRepository tecnologyRepository, ApplicationRepository applicationRepository, OrgaoRepository orgaoRepository) {
+        this.domainAnalyzerRepository = domainAnalyzerRepository;
+        this.tecnologyRepository = tecnologyRepository;
+        this.applicationRepository = applicationRepository;
+        this.orgaoRepository = orgaoRepository;
+    }
 
     //TecnologyMapper.INSTANCE.tecnologyJsonToTecnology()
 
-    public ScheduledAnalyzer(OrgaoProcessService processService,
-                             DomainAnalyzerRepository domainAnalyzerRepository) {
-        this.processService = processService;
-//        this.mapper = mapper;
-        this.domainAnalyzerRepository = domainAnalyzerRepository;
-    }
-
-    @Scheduled(fixedRate = 30000)
-    @Transactional
-    @Synchronized
+    @Scheduled(fixedRate = 10000)
+//    @Transactional
+//    @Synchronized
     public void processFileURLs() {
 
         List<Orgao> orgaos = processService.findLinksDontProcess();
 
-        for (Orgao orgao : orgaos) {
+//        for (Orgao orgao : orgaos) {
+
+        for (int i = 0; i < orgaos.size(); i++) {
+
 
             try {
+                Orgao orgao = orgaos.get(i);
                 Document document = connectConfigurationJsoup(orgao);
 
-                List<ApplicationJson> applicationsList = new ArrayList<>();
+                List<Application> applicationsList = new ArrayList<Application>();
 
-                DomainAnalyzerJson domainAnalyzerJson = new DomainAnalyzerJson();
+                DomainAnalyzer domainAnalyzerJson = new DomainAnalyzer();
 
-                extractData(document, applicationsList, domainAnalyzerJson);
+                Orgao orgaoJson = new Orgao();
 
-                List<Application> applications = new ArrayList<>(applicationsList.size());
+                extractData(document, applicationsList, orgaoJson);
 
-                BeanUtils.copyProperties(applicationsList, applications);
+//                extractData(document, new ArrayList<Application>(), orgaoJson);
+
+
+//                List<Application> applications = mapperFacade.mapAsList(applicationsList, Application.class);
+
+//                BeanUtils.copyProperties(applicationsList, applications);
 
 //                for (int i = 0; i < applicationsList.size(); i++) {
 //                    BeanUtils.copyProperties(applications.get(i), applicationsList.get(i));
@@ -71,28 +81,40 @@ public class ScheduledAnalyzer {
 
 //                List<Application> applications = TecnologyMapper.INSTANCE.toApplicationJsonApplications(applicationsList);
 
-                System.out.println(applications);
+                System.out.println(applicationsList);
 
 
-                domainAnalyzerJson.setApplicationJsons(applicationsList);
+//                domainAnalyzerJson.setApplications(applicationsList);
+//                orgaoJson.setApplications(applicationsList);
                 orgao.setStatus(Boolean.TRUE);
 
-                OrgaoJson orgaoJson = new OrgaoJson();
-                BeanUtils.copyProperties(orgao, orgaoJson);
 
-//                domainAnalyzerJson.setOrgaoJson(TecnologyMapper.INSTANCE.orgaoToOrgaoJson(orgao));
-                domainAnalyzerJson.setOrgaoJson(orgaoJson);
+//                BeanUtils.copyProperties(orgaoJson, orgaoAux);
+                applicationRepository.saveAll(applicationsList);
+                orgao.setApplications(applicationsList);
+
+                BeanUtils.copyProperties(orgao, orgaoJson, "applications");
+                orgaoRepository.save(orgaoJson);
+                domainAnalyzerJson.setOrgao(orgaoJson);
 
 //                DomainAnalyzer domainAnalyzer = TecnologyMapper.INSTANCE.domainAnalyzerJsonToDomainAnalyzer(domainAnalyzerJson);
-                DomainAnalyzer domainAnalyzer = new DomainAnalyzer();
-                BeanUtils.copyProperties(domainAnalyzerJson, domainAnalyzer);
-                domainAnalyzer.setOrgao(orgao);
+//                DomainAnalyzer domainAnalyzer = mapperFacade.map(domainAnalyzerJson, DomainAnalyzer.class);
+//                mapperFacade.map(domainAnalyzerJson, DomainAnalyzer.class);
+//                BeanUtils.copyProperties(domainAnalyzerJson, domainAnalyzer);
+//                domainAnalyzer.setOrgao(orgao);
 
-                domainAnalyzerRepository.save(domainAnalyzer);
 
                 Gson gson = new Gson();
                 String s = gson.toJson(domainAnalyzerJson);
                 System.out.println(s);
+
+//                List<Application> applications1 = orgao.getApplications();
+//                applicationRepository.saveAll(applications1);
+//                orgaoRepository.save(orgao);
+
+
+                domainAnalyzerRepository.save(domainAnalyzerJson);
+
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -102,27 +124,28 @@ public class ScheduledAnalyzer {
 
     /**
      * Extraindo dados via JSOUP
+     *
      * @param document
      * @param applicationsList
      * @param domainAnalyzerJson
      */
-    private void extractData(Document document, List<ApplicationJson> applicationsList, DomainAnalyzerJson domainAnalyzerJson) {
+    private void extractData(Document document, List<Application> applicationsList, Orgao domainAnalyzerJson) {
         Elements boxesApplications = document.select("#mainForm > div:nth-child(3) > div > div.col-md-8.pr-1.pl-4 > div");
 
-        domainAnalyzerJson.setApplicationJsons(applicationsList);
+        domainAnalyzerJson.setApplications(applicationsList);
 
         for (Element linha : boxesApplications) {
 
-            ApplicationJson app = new ApplicationJson();
+            Application app = new Application();
 
             String type = linha.getElementsByClass("card-title").first().text();
             Elements tecnologies = linha.getElementsByClass("row mb-2 mt-2");
             app.setType(type);
 
-            List<TecnologyJson> tecList = new ArrayList<>();
+            List<Tecnology> tecList = new ArrayList<>();
             for (Element linhaTec : tecnologies) {
 
-                TecnologyJson tec = new TecnologyJson();
+                Tecnology tec = new Tecnology();
 
                 String img = linhaTec.getElementsByTag("img").first().attr("data-src");
                 String name = linhaTec.getElementsByTag("h2").first().text();

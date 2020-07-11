@@ -2,18 +2,21 @@ package com.ifpe.analyzingtechnologies.dao.entities;
 
 import lombok.Data;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import java.io.Serializable;
 
 @Data
 @Entity
-public class DomainAnalyzer extends ObjetoPersistente {
+public class DomainAnalyzer implements Serializable {
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "orgao_id", referencedColumnName = "id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @OneToOne
     private Orgao orgao;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Application> applications;
-
 }
