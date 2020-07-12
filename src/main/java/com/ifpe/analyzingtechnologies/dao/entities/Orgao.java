@@ -1,6 +1,8 @@
 package com.ifpe.analyzingtechnologies.dao.entities;
 
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -24,4 +27,10 @@ public class Orgao implements Serializable {
     @OneToMany()
     @JoinColumn(name = "orgao_id")
     private List<Application> applications;
+
+    @CreatedDate
+    private LocalDateTime createAt;
+
+    @LastModifiedDate
+    private LocalDateTime updateAt;
 }
