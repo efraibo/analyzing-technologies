@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin
+@CrossOrigin(origins = "https://analyzing-technologies-app.herokuapp.com/")
 @RestController
 @RequestMapping(value = "/v1/orgaos")
 public class OrgaoController {
