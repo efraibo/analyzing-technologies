@@ -23,8 +23,9 @@ public class OrgaoController {
     }
 
     @GetMapping
-    public String teste() {
-        return "Api funcionando com sucesso";
+    @ResponseStatus(HttpStatus.OK)
+    public List<Orgao> findAllOrgao() {
+        return orgaoRepository.findAll();
     }
 
 }
